@@ -1,4 +1,18 @@
 
+Adding sub-module
+```
+git submodule add git@github.com:subash729/testing-for-submodule.git
+```
+
+Initializing sub-module
+```
+git submodule init
+```
+
+updating sub-module
+```
+git submodule update
+```
 
 # Heading
 
