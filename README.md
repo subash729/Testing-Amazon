@@ -55,9 +55,9 @@ As a Devops engineer, I want to automate deployment process to ensure consistent
 </div>
   
 2.2.2 Acceptance Criteria:
-•	Our scripts should automate the new release and deployment the code upon successful build and integration is performed by developer/devops in the CI pipeline
-•	Our scripts should be error-free for performing regular repeated tasks during deployments and must include rollback functionality in case of any errors.
-•	Our script should generate and store logs in our custom directory for auditing, problem analysis and troubleshooting later.
+-  Our scripts should automate the new release and deployment the code upon successful build and integration is performed by developer/devops in the CI pipeline
+-  Our scripts should be error-free for performing regular repeated tasks during deployments and must include rollback functionality in case of any errors.
+-  Our script should generate and store logs in our custom directory for auditing, problem analysis and troubleshooting later.
 
 2.2.3 Estimation:
 Baseline: 3 weeks
@@ -73,10 +73,10 @@ As a DevOps engineer, I implement Infrastructure as Code (IaC) to minimize resou
 </div>div
 
 2.3.2 Acceptance Criteria:
-•	Infrastructure components should be defined using IaC tools (Terraform, Ansible, chef).
-•	Provisioning and deprovisioning should be automated via IaC rather than manual.
-•	Manual intervention must have to minimized while deploying and update infrastructure to reduce error, effort, time.
-•	A historical record of version control changes should be tracked and stored through IaC to identify modifications of infrastructure
+-  Infrastructure components should be defined using IaC tools (Terraform, Ansible, chef).
+-  Provisioning and deprovisioning should be automated via IaC rather than manual.
+-  Manual intervention must have to minimized while deploying and update infrastructure to reduce error, effort, time.
+-  A historical record of version control changes should be tracked and stored through IaC to identify modifications of infrastructure
 
 2.3.3 Estimation:
 Baseline: 4 weeks
@@ -93,10 +93,10 @@ As an operations team member, I want to enhance system monitoring and alerting c
 </div>
 
 2.4.2 Acceptance Criteria:
-•	Server had to be Prepared for storing alerts, notifications, logs, and trap messages sent by various infrastructure or resources such as network, server, storage, and applications.
-•	Monitoring tools (e.g. Zabbix, Prometheus, Grafana, Nagios) have to be Set up and install for tracking statistics for those resources.
-•	Threshold values should be created to send alerts (warning, down, and up) based on the performance of resources.
-•	Review of monitoring tools should be done periodically to know update about tools are working properly or not.
+-  Server had to be Prepared for storing alerts, notifications, logs, and trap messages sent by various infrastructure or resources such as network, server, storage, and applications.
+-  Monitoring tools (e.g. Zabbix, Prometheus, Grafana, Nagios) have to be Set up and install for tracking statistics for those resources.
+-  Threshold values should be created to send alerts (warning, down, and up) based on the performance of resources.
+-  Review of monitoring tools should be done periodically to know update about tools are working properly or not.
 
 2.4.3 Estimation:
 Baseline: 2 weeks
