@@ -9,7 +9,23 @@ ls -al /tmp | grep pass
 ### 1.1 Full contents of the file sorted in ascending order (display the whole file) 
 
 ```
-cat passwd | sort
+ touch sorting.sh
+   69  chmod +x sorting.sh
+   70  vi sorting.sh
+   71  ./sorting.sh
+```
+Script used to sort
+```
+#!/bin/bash
+
+set -x
+
+filepath="/tmp/passwd"
+
+echo "Sorting the content of /etc/passwd"
+echo "================sorting started ==============="
+sort $filepath
+echo "================sorting Finished ==============="
 ```
 ### 1.2 Counting Total number of lines in passwd file
 ```
