@@ -210,11 +210,39 @@ mkfs.ext4 /dev/mapper/RAID_FOR_LOG-RAID_1_V_DISK2
 ```
 mount -a
 df -hT
-``
+```
+
 <p align="center">
 <img src="https://github.com/LF-DevOps-Training/getting-started-with-linux-system-subash729/blob/main/materials/4.11-Q2-mounting.jpg">
 </p>
 
 ## Task -2 
+Now Formatting LV for RAID so we can choose partion as RAID
+<p align="center">
+<img src="https://github.com/LF-DevOps-Training/getting-started-with-linux-system-subash729/blob/main/materials/Q4-T2-using-LV-for-RAID.jpg">
+</p
+  
+<p align="center">
+<img src="https://github.com/LF-DevOps-Training/getting-started-with-linux-system-subash729/blob/main/materials/Q4-T2-using-LV-for-RAID-1.jpg">
+</p>
 
+Now, rebootign the system todapt changes. Partition is changed as RAID
+<p align="center">
+<img src="https://github.com/LF-DevOps-Training/getting-started-with-linux-system-subash729/blob/main/materials/Q4-T2-using-LV-for-RAID-detect.jpg">
+</p>
+
+configuring the RAID level 1
+
+
+<p align="center">
+<img src="https://github.com/LF-DevOps-Training/getting-started-with-linux-system-subash729/blob/main/materials/Q4-T2-using-LV-for-RAID-configure.jpg">
+</p>
+
+
+### 4.4 Now, mounting into /var
+fomating with ext4 and mounting at mentioned point and done in /etc/fstab so it will mount dueing boot time
+
+<p align="center">
+<img src="https://github.com/LF-DevOps-Training/getting-started-with-linux-system-subash729/blob/main/materials/Q4-T2-Format-file-system-and-mount-fstab.jpg">
+</p>
 
