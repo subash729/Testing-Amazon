@@ -67,6 +67,16 @@ systemctl restart rsyslog
 logger -p user.0 "Test Complete"
 
 ```
+after writing script changing config of /etc/syslog to store user log 
+<p align="center">
+<img src="https://github.com/LF-DevOps-Training/getting-started-with-linux-system-subash729/blob/main/materials/Q3-changing%20config%20of%20etc.jpg">
+</p>
+
+Testing script
+
+<p align="center">
+<img src="https://github.com/LF-DevOps-Training/getting-started-with-linux-system-subash729/blob/main/materials/Q3-testing%20log.jpg">
+</p>
 
 # 4 Linux LVM
 
