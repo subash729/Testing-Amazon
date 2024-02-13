@@ -62,15 +62,9 @@ systemctl restart rsyslog
 
 ```
 #!/bin/bash
-#!/bin/bash
 
-# Sending Log string to rsyslog
-log_dir="/var/log/rsyslog"
-mkdir -p $log_dir
-
-logger -p systemerror "Test Complete"
-
-
+# Log string to custom file using rsyslog and logger command
+logger -p user.0 "Test Complete"
 
 ```
 
