@@ -310,9 +310,56 @@ We can see request is resolved by server B and C in case of server S failure.
 
 Note : ``` I used seperate color to identify request resolved by two server```
 
+## 2.5 Configure Nginx to handle both HTTP and HTTPS traffic (http redirected to https)
 
+step -1 : SSL Certificate and Diffie-Hellman (DH) group Creation
 
+```
+sudo openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /etc/ssl/private/nginx-selfsigned.key -out /etc/ssl/certs/nginx-selfsigned.crt
+sudo openssl dhparam -out /etc/nginx/dhparam.pem 4096
+```
+Certificate
 <p align="center">
-<img src="">
+<img src="https://github.com/LF-DevOps-Training/feb-15-system-network-narayan-subash729/blob/main/materials/Q2-T5-1-SSL%20certificate%20creation.jpg">
 </p>
+
+Diffie-Hellman
+<p align="center">
+<img src="https://github.com/LF-DevOps-Training/feb-15-system-network-narayan-subash729/blob/main/materials/Q2-T5-2-SSL%20DH%20creation.jpg">
+</p>
+
+Step -2 Configuring Nginx to Use SSL
+
+```
+sudo nano /etc/nginx/snippets/self-signed.conf
+sudo nano /etc/nginx/snippets/ssl-params.con
+```
+<p align="center">
+<img src="https://github.com/LF-DevOps-Training/feb-15-system-network-narayan-subash729/blob/main/materials/Q2-T5-3-encryption-and-script-.jpg">
+</p>
+
+Step 3 : Adding config to use SSL, and using code 301 to redirect http to https
+```
+  	listen 1900 ssl;
+        listen [::]:1900 ssl;
+        include snippets/self-signed.conf;
+        include snippets/ssl-params.conf;
+```
+<p align="center">
+<img src="https://github.com/LF-DevOps-Training/feb-15-system-network-narayan-subash729/blob/main/materials/Q2-T5-4-enabling-ssl-on-server-config.jpg">
+</p>
+
+step -4 Restart the service
+<p align="center">
+<img src="https://github.com/LF-DevOps-Training/feb-15-system-network-narayan-subash729/blob/main/materials/Q2-T5-5-restarting%20service.jpg">
+</p>
+
+Step : 5 Testing
+<p align="center">
+<img src="https://github.com/LF-DevOps-Training/feb-15-system-network-narayan-subash729/blob/main/materials/Q2-T5-6-certificate-check.jpg">
+</p>
+
+
+
+
 
