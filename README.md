@@ -229,7 +229,7 @@ http {
 </p>
 
 
-Step -2 Adding config in individual server created for load-balancing
+Step -2 Adding config  to call backend defined above
 ```
   location / {
                  proxy_pass http://backend;
@@ -238,8 +238,81 @@ Step -2 Adding config in individual server created for load-balancing
 
 ```
 <p align="center">
-<img src="https://github.com/LF-DevOps-Training/feb-15-system-network-narayan-subash729/blob/main/materials/Q2-T2-Adding-weight.jpg">
+<img src="https://github.com/LF-DevOps-Training/feb-15-system-network-narayan-subash729/blob/main/materials/Q2-T2-Adding-server-reverse-proxy.jpg">
 </p>
 
-I am still resarching about it to loadbalance it properly. Time was conused due to nginx and apache2 services was confilcted on my system
+Step 2 : Checking Nginx loadbalancing
+We send the request at same  IP and port so that it redirect to balance load among multiple server
+
+<p align="center">
+<img src="https://github.com/LF-DevOps-Training/feb-15-system-network-narayan-subash729/blob/main/materials/Q2-T2-load-balancerServer-redirect%20traffic%20based%20on%20wight.jpg">
+</p>
+
+## 2.3 Implement health checks to ensure that only healthy backend servers receive traffic
+
+ Step : 1 Defining request fail and time out options sto check status of web server
+
+ ```
+upstream backend {
+        server 192.168.140.129:1900 weight=2 max_fails=3 fail_timeout=30s;
+        server 192.168.140.129:2000 weight=1 max_fails=3 fail_timeout=30s;
+        server 192.168.140.129:2100 weight=3 max_fails=3 fail_timeout=30s;
+    }
+```
+
+We also create a gile to store log about request statistics of web server
+```
+log_format main '$remote_addr - $remote_user [$time_local] "$request" 'upstream_addr=$upstream_addr';
+	access_log /var/log/nginx/health.log main;
+```
+<p align="center">
+<img src="https://github.com/LF-DevOps-Training/feb-15-system-network-narayan-subash729/blob/main/materials/Q2-T3-congifure%3Dhealth-check-and-log-filter.jpg">
+</p>
+
+Reviewing all ther server that are properly working or not
+<p align="center">
+<img src="https://github.com/LF-DevOps-Training/feb-15-system-network-narayan-subash729/blob/main/materials/Q2-T3-Reviewing-Health-status.jpg">
+</p>
+
+Note : ``` I used seperate color to identify request resolved by three server ```
+
+## 2.4 Simulate a server failure and verify load balance
+Denying service of server a and clearing older log and monitoring the new log
+```
+### Blocking port to disable service provided by server a
+ufw deny 1900
+ufw reload
+ufw status
+```
+
+<p align="center">
+<img src="https://github.com/LF-DevOps-Training/feb-15-system-network-narayan-subash729/blob/main/materials/Q2-T4-Disabling-port.jpg">
+</p>
+
+```
+### Removing server a conf to make server down
+cat /etc/nginx/sites-enabled/servera /home/subash_test/
+mv /etc/nginx/sites-enabled/servera /home/subash_test/servera
+nginx -t
+service nginx reload
+
+### Clearing older log to capture new log
+echo   > /var/log/nginx/health.log
+tail -f /var/log/nginx/health.log
+
+```
+
+<p align="center">
+<img src="https://github.com/LF-DevOps-Training/feb-15-system-network-narayan-subash729/blob/main/materials/Q2-T4-Server-load-balancing-between-two-serves.jpg">
+</p>
+
+We can see request is resolved by server B and C in case of server S failure.
+
+Note : ``` I used seperate color to identify request resolved by two server```
+
+
+
+<p align="center">
+<img src="">
+</p>
 
