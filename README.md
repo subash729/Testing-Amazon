@@ -1,4 +1,10 @@
 # 1. Setup a DNS Server
+<p align="center">
+<img src="https://github.com/LF-DevOps-Training/feb-15-system-network-narayan-subash729/blob/main/materials/DNS-DIagram.jpg">
+</p>
+
+Fig : DNS server setup on our enterprise as weel ase some major DNS till Root server 
+
 ## 1.1 Create an authoritative DNS server with domain zone interntest.com
 
 Step -1 : Installing and Configuring bind for DNS
@@ -137,6 +143,12 @@ Step 3 : I had performed test from Windows due to 2 VM were not able share same 
 
 # 2 . Design an Nginx load balancer with weighted distribution among backend servers
 
+<p align="center">
+<img src="https://github.com/LF-DevOps-Training/feb-15-system-network-narayan-subash729/blob/main/materials/WEB-server-diagram.jpg">
+</p>
+
+Fig : Load balancer divinding load/request to remote or local user 
+
 ## 2.1 Create three backend servers: A, B, and C
 
 Step -1 Creating Directory and web-pages of server
@@ -165,6 +177,7 @@ cp /etc/nginx/sites-enabled/default /etc/nginx/sites-enabled/serverc
 Step -2 : HOsting multiple Web into single host by using different port
 ### used config
 
+```bash
 server {
         listen 1900 ;
         listen [::]:1900;
@@ -178,16 +191,23 @@ server {
         }
 
 }
-
+```
 Testing all multiple web hosted on different port
 
 <p align="center">
 <img src="https://github.com/LF-DevOps-Training/feb-15-system-network-narayan-subash729/blob/main/materials/Q2-T1-server-hosting-config.jpg">
 </p>
 
+Step -3 : Testing multiple hosted Web
+
+<p align="center">
+<img src="https://github.com/LF-DevOps-Training/feb-15-system-network-narayan-subash729/blob/main/materials/Q2-T1-3-Serve-hosted.jpg">
+</p>
 
 
-## 2.2 *Design an Nginx load balancer with weighted distribution among backend servers*
+
+
+## 2.2 Design an Nginx load balancer with weighted distribution among backend servers
    - Create three backend servers: A, B, and C
    - Each backend server should have a weight assigned based on its capacity
       - Server A has a weight of 2
