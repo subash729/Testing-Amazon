@@ -6,14 +6,28 @@ sudo apt update
 sudo apt upgrade
 ```
 
-Step -2 Installing OpenVPN
+<p align="center">
+<img src="https://github.com/LF-DevOps-Training/feb-16-system-network-assignment-subash729/blob/main/materials/QQ1-0-update-and-upgrade.jpg">
+</p>
+
+
+Step -2 Installing Required Package  (OpenVPN and easy-rsa)
 ```
 sudo apt install openvpn easy-rsa
 ```
 
+<p align="center">
+<img src="https://github.com/LF-DevOps-Training/feb-16-system-network-assignment-subash729/blob/main/materials/QQ1-T1-1-Openssh-easy-rsa-installation.jpg">
+</p>
+
 Step -3 Generate Certificates and Keys
-$ make-cadir ~/openvpn-ca && cd ~/openvpn-ca
-$ nano ./vars
+```
+make-cadir ~/openvpn-ca && cd ~/openvpn-ca
+nano ./vars
+```
+<p align="center">
+<img src="https://github.com/LF-DevOps-Training/feb-16-system-network-assignment-subash729/blob/main/materials/QQ2-T1-2-CA-Direcroty-create-Var-setup.jpg">
+</p>
 
 ```
 set_var EASYRSA_REQ_COUNTRY    "NP"
@@ -24,13 +38,62 @@ set_var EASYRSA_REQ_EMAIL      "subash@example.net"
 set_var EASYRSA_REQ_OU         "IT"
 ```
 
+<p align="center">
+<img src="https://github.com/LF-DevOps-Training/feb-16-system-network-assignment-subash729/blob/main/materials/QQ1-T1-2.1-Var-setup.jpg">
+</p>
 
-$ ./easyrsa init-pki
-$ ./easyrsa build-ca
-$ ./easyrsa gen-req server nopass
-$ ./easyrsa sign-req server server
-$ ./easyrsa gen-dh
-$ openvpn --genkey --secret pki/ta.key
+
+Step 3.1 Generating Required ceretificates and files
+```
+./easyrsa init-pki
+```
+<p align="center">
+<img src="https://github.com/LF-DevOps-Training/feb-16-system-network-assignment-subash729/blob/main/materials/QQ2-T1-3-PKI-Initialization.jpg">
+</p>
+
+```
+./easyrsa build-ca
+```
+<p align="center">
+<img src="https://github.com/LF-DevOps-Training/feb-16-system-network-assignment-subash729/blob/main/materials/QQ1-T1-4-build-ca.jpg">
+</p>
+
+```
+./easyrsa gen-req server nopass
+```
+<p align="center">
+<img src="https://github.com/LF-DevOps-Training/feb-16-system-network-assignment-subash729/blob/main/materials/QQ1-T1-5-gen-req.jpg">
+</p>
+
+
+```
+./easyrsa sign-req server server
+```
+<p align="center">
+<img src="https://github.com/LF-DevOps-Training/feb-16-system-network-assignment-subash729/blob/main/materials/QQ1-T1-6-sign-req.jpg">
+</p>
+
+```
+./easyrsa gen-dh
+```
+Started to generate Diffieman-Hash
+<p align="center">
+<img src="https://github.com/LF-DevOps-Training/feb-16-system-network-assignment-subash729/blob/main/materials/QQ1-T1-7-gen-dh.jpg">
+</p>
+
+Diffieman-Hash generation completed
+<p align="center">
+<img src="https://github.com/LF-DevOps-Training/feb-16-system-network-assignment-subash729/blob/main/materials/QQ1-T1-7.1-gen-dh-complete.jpg">
+</p>
+
+
+```
+openvpn --genkey --secret pki/ta.key
+```
+<p align="center">
+<img src="https://github.com/LF-DevOps-Training/feb-16-system-network-assignment-subash729/blob/main/materials/QQ1-T1-8-pki-ta.jpg">
+</p>
+
 
 Step 4: Configure OpenVPN
 Copying server config
