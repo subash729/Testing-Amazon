@@ -1,3 +1,6 @@
+# Q1. Create an OpenVPN server & connect client via GUI and CLI
+
+## Task -1 Openvpn Server setup
 ### Step 1: Updating and Upgrading Ubuntu
 We are updating and upgrading our Ubuntu system before installing the openvpn.
 
@@ -164,8 +167,17 @@ sudo systemctl start openvpn@server
 # Restart the service if it is started already
 sudo systemctl restart openvpn@server
 ```
+<p align="center">
+<img src="https://github.com/LF-DevOps-Training/feb-16-system-network-assignment-subash729/blob/main/materials/QQ1-T1-13-Restarting-openvpn-service.jpg">
+</p>
 
 Enabling the service so that it can start automatic after host turned on
 ```
 sudo systemctl enable openvpn@server
 ```
+<p align="center">
+<img src="https://github.com/LF-DevOps-Training/feb-16-system-network-assignment-subash729/blob/main/materials/QQ1-T1-14-enabling-the-service.jpg">
+</p>
+
+## Task -2 Client login and connnect to Openvpn Server
+
