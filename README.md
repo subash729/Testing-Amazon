@@ -137,5 +137,11 @@ scp client1.ovpn subash@192.168.140.133:/tmp
 </p>
 
 ### Step 6 : Testing from Client end
+<p align="center">
+<img src="https://github.com/LF-DevOps-Training/feb-16-system-network-assignment-subash729/blob/main/materials/QQ1-T2-20-Testing-connectivity.jpg">
+</p>
+
+
+
 
 
