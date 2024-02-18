@@ -100,12 +100,22 @@ Copying server config
 ```
 sudo cp /usr/share/doc/openvpn/examples/sample-config-files/server.conf  /etc/openvpn/server.conf
 ```
+<p align="center">
+<img src="https://github.com/LF-DevOps-Training/feb-16-system-network-assignment-subash729/blob/main/materials/QQ1-T1-9-copying%20server-config-file.jpg">
+</p>
+
+
 copying certificates and key
 ```
 sudo cp /home/subash/openvpn-ca/pki/{ca.crt,dh.pem,ta.key} /etc/openvpn
 sudo cp /home/subash/openvpn-ca/pki/issued/server.crt /etc/openvpn
 sudo cp /home/subash/openvpn-ca/pki/private/server.key /etc/openvpn
 ```
+
+<p align="center">
+<img src="https://github.com/LF-DevOps-Training/feb-16-system-network-assignment-subash729/blob/main/materials/QQ1-T1-10-ccopying%20required-certificates.jpg">
+</p>
+
 
 Now configuring server config of  (```/etc/openvpn/server.conf```)
 ```
@@ -117,20 +127,37 @@ dh dh.pem
 ;tls-auth ta.key 0
 tls-crypt ta.key
 ```
+Changing config 
+<p align="center">
+<img src="https://github.com/LF-DevOps-Training/feb-16-system-network-assignment-subash729/blob/main/materials/QQ1-T1-11-editing-server-config.jpg">
+</p>
+
+<p align="center">
+<img src="https://github.com/LF-DevOps-Training/feb-16-system-network-assignment-subash729/blob/main/materials/QQ1-T1-11.1-editing-server-config.jpg">
+</p>
+
 
 
 enable Ip forwarding
 ```
-$ sudo nano /etc/sysctl.conf
+sudo nano /etc/sysctl.conf
 # Uncomment the following line:
 net.ipv4.ip_forward=1
 ```
+<p align="center">
+<img src="https://github.com/LF-DevOps-Training/feb-16-system-network-assignment-subash729/blob/main/materials/QQ1-T1-12-sysctl-config.jpg">
+</p>
+
+
 Appplying the changes
 ```
 sudo sysctl -p
 ```
+<p align="center">
+<img src="https://github.com/LF-DevOps-Training/feb-16-system-network-assignment-subash729/blob/main/materials/QQ1-T1-12.1-applying-sysctl-config-change.jpg">
+</p>
 
-Step -5 Starting and Enable OpenVPN
+### Step -5 Starting and Enable OpenVPN
 
 ```
 sudo systemctl start openvpn@server
