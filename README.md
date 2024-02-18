@@ -1,4 +1,4 @@
-Step 1: Updating and Upgrading Ubuntu
+### Step 1: Updating and Upgrading Ubuntu
 We are updating and upgrading our Ubuntu system before installing the openvpn.
 
 ```
@@ -11,7 +11,7 @@ sudo apt upgrade
 </p>
 
 
-Step -2 Installing Required Package  (OpenVPN and easy-rsa)
+### Step -2 Installing Required Package  (OpenVPN and easy-rsa)
 ```
 sudo apt install openvpn easy-rsa
 ```
@@ -20,7 +20,7 @@ sudo apt install openvpn easy-rsa
 <img src="https://github.com/LF-DevOps-Training/feb-16-system-network-assignment-subash729/blob/main/materials/QQ1-T1-1-Openssh-easy-rsa-installation.jpg">
 </p>
 
-Step -3 Generate Certificates and Keys
+### Step -3 Generate Certificates and Keys
 ```
 make-cadir ~/openvpn-ca && cd ~/openvpn-ca
 nano ./vars
@@ -43,7 +43,7 @@ set_var EASYRSA_REQ_OU         "IT"
 </p>
 
 
-Step 3.1 Generating Required ceretificates and files
+### Step 3.1 Generating Required ceretificates and files
 ```
 ./easyrsa init-pki
 ```
@@ -95,7 +95,7 @@ openvpn --genkey --secret pki/ta.key
 </p>
 
 
-Step 4: Configure OpenVPN
+### Step 4: Configure OpenVPN
 Copying server config
 ```
 sudo cp /usr/share/doc/openvpn/examples/sample-config-files/server.conf  /etc/openvpn/server.conf
