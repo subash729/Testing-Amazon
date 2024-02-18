@@ -1,6 +1,6 @@
-TASK 2 : 
+## TASK 2 : connecting client via GUI and CLI After generating config for client
 
-Step 1 : Generating required certificate and key
+### Step 1 : Generating required certificate and key
 
 ```
 ./easyrsa gen-req client1 nopass
@@ -20,7 +20,7 @@ Step 1 : Generating required certificate and key
 
 We have to enter old server pass key which we had done setup at previous step 
 
-Step -2 : copying client configuration, cetificate and key to system cofiguration
+### Step -2 : copying client configuration, cetificate and key to system cofiguration
 ```
 sudo cp pki/private/client1.key /etc/openvpn/client/
 sudo cp pki/issued/client1.crt /etc/openvpn/client/
@@ -85,14 +85,14 @@ group nogroup
 key-direction 1
 ```
 
-Step 3 : Creating Script to generate client configuration of .ovpn
+### Step 3 : Creating Script to generate client configuration of .ovpn
 
 ```
 touch gen_config.sh
 nano gen_config.sh
 ```
 <p align="center">
-<img src="">
+<img src="https://github.com/LF-DevOps-Training/feb-16-system-network-assignment-subash729/blob/main/materials/QQ1-T2-19-Creating-script-for-client-config.jpg">
 </p>
 
 ```bash
@@ -113,17 +113,29 @@ cat ${BASE_CONFIG} \
     <(echo -e '</tls-crypt>') \
     > ${OUTPUT_DIR}/${1}.ovpn
 ```
+<p align="center">
+<img src="https://github.com/LF-DevOps-Training/feb-16-system-network-assignment-subash729/blob/main/materials/QQ1-T2-19.1-script-for-client-config.jpg">
+</p>
 
-Step -4 : Generating config and sending to client
+### Step -4 : Generating config and sending to client
 ```
 chmod 700 /root/openvpn-ca/config_gen.sh
-./gen_config.sh client1```
-
+./gen_config.sh client1
 ```
+<p align="center">
+<img src="https://github.com/LF-DevOps-Training/feb-16-system-network-assignment-subash729/blob/main/materials/QQ1-T2-19.2-Testing-script.jpg">
+</p>
 
 
-Step -5 Testing
+### Step -5 Copying cofing to client end
 
 ```
 scp client1.ovpn subash@192.168.140.133:/tmp
 ```
+<p align="center">
+<img src="https://github.com/LF-DevOps-Training/feb-16-system-network-assignment-subash729/blob/main/materials/QQ1-T2-20-copying-scipt-to-client.jpg">
+</p>
+
+### Step 6 : Testing from Client end
+
+
