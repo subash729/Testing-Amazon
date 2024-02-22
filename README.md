@@ -241,6 +241,21 @@ def main():
 if __name__ == "__main__":
     main()
 ```
+
+limiting cpu usage to 5 %
+
+```bash
+sudo cgcreate -g cpu:/cpulimited
+sudo cgset -r cpu.cfs_quota_us=5000 my_cgroup
+
+sudo systemctl set-property --runtime -- user.slice CPUQuota=5%
+
+sudo systemctl set-property --runtime -- user.slice TasksAccounting=yes
+sudo systemctl set-property --runtime -- user.slice MemoryAccounting=yes
+sudo systemctl set-property --runtime -- user.slice PIDsAccounting=yes
+sudo systemctl set-property --runtime -- user.slice CPUAccounting=yes
+sudo systemctl set-property --runtime -- user.slice CPUQuota=5%
+```
 ## 6. Create upper and lower directories, and place the files in it. Use an overlay mount to simulate the Union File System. Provide the screenshot of the merged filesystem, and the commands used. 
 
 #### Step -1 : Creating directory and files to test overlay
