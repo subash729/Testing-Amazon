@@ -289,7 +289,7 @@ Identifying required resources
 
 creating new container with manally predefining the resources
 <p align="center">
-<img src="https://github.com/LF-DevOps-Training/feb-23-docker-mahesh-regmi-subash729/blob/main/materials/Q3-T2-identifying-resource-usage-container.jpg">
+<img src="https://github.com/LF-DevOps-Training/feb-23-docker-mahesh-regmi-subash729/blob/main/materials/Q3-T3-2-defining-limit.jpg">
 </p>
 
 Changing the limit of allocated resources
@@ -316,13 +316,165 @@ services:
 # Question 4
 
 ## 1. Write a dockerfile to build the image for the 3-tier application that you developed in earlier assignments.
+Pre requirements
+```
+sudo docker network create bridge-sub --driver bridge
+sudo docker inspect bridge-sub
 
+nano Dockerfiledb
+nano Dockerfilebackend
+nano Dockerfilefrontend
+```
+
+scripts of Dockerfile are as follows
+### Dockerfiledb
+```bash
+FROM postgres:latest
+
+# Define arguments for username and password
+ARG POSTGRES_USER=myuser
+ARG POSTGRES_PASSWORD=mypassword
+ARG POSTGRES_DB=mydatabase
+
+# Set environment variables
+ENV POSTGRES_USER=$POSTGRES_USER
+ENV POSTGRES_PASSWORD=$POSTGRES_PASSWORD
+ENV POSTGRES_DB=$POSTGRES_DB
+
+# Expose the PostgreSQL port
+EXPOSE 5432
+```
+you can download script [Dockerfiledb](https://github.com/LF-DevOps-Training/feb-23-docker-mahesh-regmi-subash729/blob/main/code/Dockerfiledb)
+
+### Dockerfilebackend
+```bash
+# Downloading even stable version
+
+FROM node:20-alpine
+
+# Set the working directory
+WORKDIR /backend
+
+# Copy package.json and package-lock.json
+COPY package*.json /backend/
+COPY yarn.lock /backend/
+
+
+# Install dependencies
+RUN yarn install
+
+# Copy the rest of the application
+COPY . .
+
+# Expose the backend port
+EXPOSE 3000
+
+# Command to run the backend
+CMD [ "yarn", "start" ]
+```
+
+Download Dockerfile for  backend [Dockerfilebackend](https://github.com/LF-DevOps-Training/feb-23-docker-mahesh-regmi-subash729/blob/main/code/Dockerfilebackend)
+
+### Dockerfilefrontend
+```bash
+# Downloading even stable version
+
+FROM node:20-alpine
+
+# Set the working directory
+WORKDIR /frontend
+
+# Copy package.json and package-lock.json
+COPY package*.json /frontend/
+COPY yarn.lock /frontend/
+
+
+# Install dependencies
+RUN yarn install
+
+# Copy the rest of the application
+COPY . .
+
+# Expose the backend port
+EXPOSE 5173
+
+# Command to run the backend
+CMD [ "yarn", "dev" ]
+
+```
+Download Dockerfile for  frontend  [Dockerfilefrontend](https://github.com/LF-DevOps-Training/feb-23-docker-mahesh-regmi-subash729/blob/main/code/Dockerfilefrontend)
+
+### Step -2 Building images and creating container
+```
+# database
+sudo docker build -t tododb-image -f Dockerfiledb .
+sudo docker run  -itd --name tododb-container -e POSTGRES_USER=subash  -e POSTGRES_PASSWORD=subash@123 -e POSTGRES_DB=tododb -p 5432:5432 tododb-image
+```
+database image build
+<p align="center">
+<img src="https://github.com/LF-DevOps-Training/feb-23-docker-mahesh-regmi-subash729/blob/main/materials/Q4-T1-11-db-imagebuild.jpg">
+</p>
+
+container creation
+<p align="center">
+<img src="https://github.com/LF-DevOps-Training/feb-23-docker-mahesh-regmi-subash729/blob/main/materials/Q4-T1-12-db-container-creation.jpg">
+</p>
+
+
+```
+#backend
+sudo docker build -t todobackend-image -f Dockerfilebackend .
+sudo docker run -itd --name todoback-container -p 3000:3000 todobackend-image
+
+```
+
+Backend image build
+<p align="center">
+<img src="https://github.com/LF-DevOps-Training/feb-23-docker-mahesh-regmi-subash729/blob/main/materials/Q4-T2-21-building-image.jpg">
+</p>
+
+container creation
+<p align="center">
+<img src="https://github.com/LF-DevOps-Training/feb-23-docker-mahesh-regmi-subash729/blob/main/materials/Q4-T2-22-creating-container.jpg">
+</p>
+
+```
+#frontend
+sudo docker build -t todofrontend -f Dockerfilefrontend .
+sudo docker run -itd --name todofront-container -p 5437:5437 todofrontend
+```
+Frontend image build
+<p align="center">
+<img src="https://github.com/LF-DevOps-Training/feb-23-docker-mahesh-regmi-subash729/blob/main/materials/Q4-T2-31-image-building-Front-end.jpg">
+</p>
+
+container creation
+<p align="center">
+<img src="https://github.com/LF-DevOps-Training/feb-23-docker-mahesh-regmi-subash729/blob/main/materials/Q4-T2-32-container-building-Front-end.jpg">
+</p>
 
 ## 2. Your application should be accessible from the host system.
+Testing Database from host
+<p align="center">
+<img src="https://github.com/LF-DevOps-Training/feb-23-docker-mahesh-regmi-subash729/blob/main/materials/Q4-T1-12-db-connect--table-create.jpg">
+</p>
+
+Testing Backed from host
+<p align="center">
+<img src="https://github.com/LF-DevOps-Training/feb-23-docker-mahesh-regmi-subash729/blob/main/materials/Q4-T2-23-backend-response-testing.jpg">
+</p>
+
+Testing Frontend from host
+<p align="center">
+<img src="https://github.com/LF-DevOps-Training/feb-23-docker-mahesh-regmi-subash729/blob/main/materials/Q4-T2-33-Front-end-testing.jpg">
+</p>
+It doesn't had provided solution till now, I am still reaserching about it
 
 ## 3. Write a bash script to spawn all these containers and make another script to kill those container.
 
 ## 4. Bonus: Make the data persist by using docker volumes in those containers.
+
+#DOing research on how to setup for 3 tier
 
 # Question 5.
 1. Convert the **answer** from Q4 into docker-compose equivalent implementation.
