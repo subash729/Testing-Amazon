@@ -1,571 +1,232 @@
-# Question 1.
-## 1. Make an account in https://hub.docker.com.
-   
-Answer : 
-Account is created successfully
-username : ***subash729**
+## Description
+Create a CRUD application in React interacting with a json-server based on the requirements below
+
+#### Data should have fields for intern members 
+1. Name
+2. Address
+3. Date of birth
+4. Selection Status(boolean)
+
+### 1. Create a form route to entry data for the internmembers
+# Answer
+### Step -1 : Creating project
+```
+yarn create vite my-crud-app --template react
+cd my-crud-app
+yarn add react-router-dom axios
+yarn add react-datepicker
+yarn add json-server
+```
+
 <p align="center">
-<img src="https://github.com/LF-DevOps-Training/feb-23-docker-mahesh-regmi-subash729/blob/main/materials/Q1-T1-account-image.jpg">
+<img src="https://github.com/LF-DevOps-Training/feb-19-reactjs-prayatna-subash729/blob/main/materials/Q1-T1-1-project-creating.jpg">
 </p>
-## 2. Build a docker image which just prints **hello class** and exits.
 
-Commands used
-```
-nano Dockerfile
-```
+### step -2 : Adding component in react and interconnecting them.
 
-Scipts used
+### Database creation
+creating db.json in root directory
 ```bash
-FROM docker.io/ubuntu:3.16.9
-CMD ["echo", "Hello class"]
+{
+    "internMembers": []
+  }
 ```
-
-### Step -2  Builindg an image
-```
-sudo docker build -t hello-class .
-sudo docker images
-```
-image pulling 
-<p align="center">
-<img src="https://github.com/LF-DevOps-Training/feb-23-docker-mahesh-regmi-subash729/blob/main/materials/Q1-T2-ubuntu-linux.jpg">
-</p>
-
-## 3. Try to minimize the size of this image as much as you can!
-
-### Step -1 Listing and removing older heavy image
-```
-sudo docker images
-sudo docker rmi edc6bba3fc86
-```
-
-### Step - 2 : Creating docker file
-Commands used
-```
-nano Dockerfile
-```
-
-Scipts used
+making live to listen 
 ```bash
-FROM docker.io/alpine:3.16.9
-CMD ["echo", "Hello, class!"]
-```
+json-server --watch db.json --port 3001
 
-### Step -3  Builindg an image
 ```
-sudo docker build -t hello-class .
-sudo docker images
-```
+we can find our database at
+http://localhost:3001/internMembers
 
-Note :  older was ``` ~ 77 MB ``` and this older alpine linux is only ``` ~5 MB ``` 
 <p align="center">
-<img src="https://github.com/LF-DevOps-Training/feb-23-docker-mahesh-regmi-subash729/blob/main/materials/Q1-T3-alpine-linux.jpg">
+<img src="https://github.com/LF-DevOps-Training/feb-19-reactjs-prayatna-subash729/blob/main/materials/Q1-T1-2-databse-up.jpg">
 </p>
 
-## 4. Push this image in dockerhub.
-### Step - 1 : Login to Registery
+### Step - 3 : making  some changes so that it can support jsx
+3.1  creating **tsconfig.json** in root level
 ```bash
-sudo docker login
-
-Log in with your Docker ID or email address to push and pull images from Docker Hub. If you don't have a Docker ID, head over to https://hub.docker.com/ to create one.
-You can log in with your password or a Personal Access Token (PAT). Using a limited-scope PAT grants better security and is required for organizations using SSO. Learn more at https://docs.docker.com/go/access-tokens/
-
-Username: subash729
-Password:
-
-Login Succeeded
-
-<p align="center">
-<img src="https://github.com/LF-DevOps-Training/feb-23-docker-mahesh-regmi-subash729/blob/main/materials/Q1-T4-1-login.jpg">
-</p>
-
-
+{
+    "compilerOptions": {
+      "jsx": "react-jsx"
+    }
+  }
 ```
-### Step - 2 : Tagging and pushing images to registery
+
+3.2 Adding ``` jsx: 'react-jsx' ``` in vite.config.js
+final config will be
 ```bash
-sudo docker tag hello-class subash729/hello-class:subash-v1
-sudo docker push subash729/hello-class:subash-v1
+import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react';
+
+// https://vitejs.dev/config/
+export default defineConfig({
+  plugins: [react()],
+  jsx: 'react-jsx', 
+})
 ```
+Adding config files
 <p align="center">
-<img src="https://github.com/LF-DevOps-Training/feb-23-docker-mahesh-regmi-subash729/blob/main/materials/Q1-T4-2-tagging-and-pushing-image.jpg">
+<img src="https://github.com/LF-DevOps-Training/feb-19-reactjs-prayatna-subash729/blob/main/materials/Q1-T1-3-adding-config-files.jpg">
 </p>
 
-### Step - 3 : Veryfying the images at Registry
-
-<p align="center">
-<img src="https://github.com/LF-DevOps-Training/feb-23-docker-mahesh-regmi-subash729/blob/main/materials/Q1-T4-3-image-verification-in-registry.jpg">
-</p>
-
-
-## 5. Write a bash script which builds+tags+pushes the image into the dockerhub. (Bonus: Make the tag increase the number everytime it's built)
-
-### Step -1 : Preparing script
-command to preapre script and making it executable
-```
-nano  dockersrcipt.sh
-```
-script used
+### Step -4 Creating ```components``` directory under ```src``` to add components for inserting data
 ```bash
-#!/bin/bash
+import React, { useState } from 'react';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
+import axios from 'axios';
 
-# Reading username and  password (making non printable at screen)
-read -p "Enter Docker Hub username: " DOCKER_USERNAME
-read -s -p "Enter Docker Hub password: " DOCKER_PASSWORD
+const InternMembersForm = () => {
+  const [formData, setFormData] = useState({
+    name: '',
+    address: '',
+    dateOfBirth: new Date(), // Set a default date
+    selectionStatus: false,
+  });
 
-echo  # Add a new line after password input
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
 
-# Set Docker Hub credentials as environment variables
-export DOCKER_USERNAME
-export DOCKER_PASSWORD
+  const handleDateChange = (date) => {
+    setFormData({ ...formData, dateOfBirth: date });
+  };
 
-#choosing date and time value for unique incremental-versioning
-VERSION=$(date +%Y%m%d%H%M)
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      await axios.post('http://localhost:3001/internMembers', formData);
+      console.log('Data submitted successfully');
+      // You can also redirect or show a success message here
+    } catch (error) {
+      console.error('Error submitting data:', error);
+    }
+  };
 
-# Building and tagging the Docker image
-docker build -t ${DOCKER_USERNAME}/hello-class:${VERSION} .
-docker tag ${DOCKER_USERNAME}/hello-class:${VERSION} ${DOCKER_USERNAME}/hello-class:latest
+  return (
+    <form onSubmit={handleSubmit}>
+      <label>Name:</label>
+      <input type="text" name="name" value={formData.name} onChange={handleChange} />
 
-echo "Docker image built successfully with version: ${VERSION}"
-# Push the image to Docker Hub using Docker credential helpers
-docker login -u ${DOCKER_USERNAME} -p ${DOCKER_PASSWORD}
-docker push ${DOCKER_USERNAME}/hello-class:${VERSION}
-docker push ${DOCKER_USERNAME}/hello-class:latest
+      <label>Address:</label>
+      <input type="text" name="address" value={formData.address} onChange={handleChange} />
 
-echo "Docker image pushed successfully to Docker Hub."
+      <label>Date of Birth:</label>
+      <DatePicker selected={formData.dateOfBirth} onChange={handleDateChange} />
 
-# Clean up environment variables so later no one can read my username and password
-unset DOCKER_USERNAME
-unset DOCKER_PASSWORD
-```
+      <label>Selection Status:</label>
+      <input
+        type="checkbox"
+        name="selectionStatus"
+        checked={formData.selectionStatus}
+        onChange={handleChange}
+      />
 
-### Step -2 : Running script to test
-```
-chmod +x dockersrcipt.sh
-sudo ./dockersrcipt.sh
-```
-<p align="center">
-<img src="https://github.com/LF-DevOps-Training/feb-23-docker-mahesh-regmi-subash729/blob/main/materials/Q1-T5-1-script-tested.jpg">
-</p>
+      <button type="submit">Submit</button>
+    </form>
+  );
+};
 
-### Step -3 : Veryfying images uploaded or not in Dockerhub
-<p align="center">
-<img src="https://github.com/LF-DevOps-Training/feb-23-docker-mahesh-regmi-subash729/blob/main/materials/Q1-T5-reviewing-images.jpg">
-</p>
-
-
-# Question 2
-
-## 1. Pull this image `docker pull docker.io/redis:6.0-bookworm`.
-```
-docker pull docker.io/redis:6.0-bookworm
-sudo docker images
-```
-<p align="center">
-<img src="https://github.com/LF-DevOps-Training/feb-23-docker-mahesh-regmi-subash729/blob/main/materials/Q2-T1-pulling-images.jpg">
-</p>
-
-## 2. Find out the commands used to create this image using the command `docker inspect`.
+export default InternMembersForm;
 
 ```
-sudo docker images
-sudo docker inspect redis:6.0-bookworm
-
-# ALso we can inspect direct through registery
-docker inspect docker.io/redis:6.0-bookworm
-```
-<p align="center">
-<img src="https://github.com/LF-DevOps-Training/feb-23-docker-mahesh-regmi-subash729/blob/main/materials/Q2-T2-inspecting-images.jpg">
-</p>
-
-
-
-## 3. Scan the image and list out all the vulnerabilities that you find.
-
-### Step 1 : installing tools to scan the images
-```
-wget -qO - https://aquasecurity.github.io/trivy-repo/deb/public.key | sudo gpg --dearmor -o /usr/share/keyrings/trivy-archive-keyring.gpg
-
-echo "deb [signed-by=/usr/share/keyrings/trivy-archive-keyring.gpg] https://aquasecurity.github.io/trivy-repo/deb $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/trivy.list > /dev/null
-
-sudo apt-get update
-
-sudo apt-get install trivy
-```
-
-<p align="center">
-<img src="https://github.com/LF-DevOps-Training/feb-23-docker-mahesh-regmi-subash729/blob/main/materials/Q2-T3-tool-installation.jpg">
-</p>
-
-### Step -2 : Downloading database and Scanning the images
+### step -5 : Updating App.jsx by routing it to InternMembersForm component 
 
 ```bash
-trivy image --download-db-only
-trivy image  docker.io/redis:6.0-bookworm
+import React from 'react';
+import InternMembersForm from './components/InternMembersForm';
 
-# we can filter only high and critical vulnerability 
-trivy image --severity HIGH,CRITICAL  docker.io/redis:6.0-bookworm
-trivy image --severity HIGH,CRITICAL --scanners vuln  docker.io/redis:6.0-bookworm
+const App = () => {
+  return (
+    <div>
+      <h1>Intern Members CRUD App</h1>
+      <InternMembersForm />
+    </div>
+  );
+};
 
-#We are also able to scan image of local repoitory
-trivy image --severity HIGH,CRITICAL  redis:6.0-bookworm
-```
-Scanning the image
-<p align="center">
-<img src="https://github.com/LF-DevOps-Training/feb-23-docker-mahesh-regmi-subash729/blob/main/materials/Q2-T3-1-scanning-full.jpg">
-</p>
-
-Now , Filtering High and Critical
-<p align="center">
-<img src="https://github.com/LF-DevOps-Training/feb-23-docker-mahesh-regmi-subash729/blob/main/materials/Q2-T3-1-scanning-high-and-critical.jpg">
-</p>
-
-Now , Filtering High and Critical with disabling secret scanning to reduce image scanning time
-<p align="center">
-<img src="https://github.com/LF-DevOps-Training/feb-23-docker-mahesh-regmi-subash729/blob/main/materials/Q2-T3-3-scanning-filter.jpg">
-</p>
-
-
-
-## 4. Export this image into `tar` format.
-From local images
-```
-sudo docker save -o /home/subash/docker/redis_6.0-bookworm.tar redis:6.0-bookworm
-sudo ls -al /home/subash/docker
+export default App;
 ```
 
-<p align="center">
-<img src="https://github.com/LF-DevOps-Training/feb-23-docker-mahesh-regmi-subash729/blob/main/materials/Q2-T4-tar-images-to-local-folder.jpg">
-</p>
 
 
-from registry images
-```
-# Removing older files
-sudo rm /home/subash/docker/redis_6.0-bookworm.tar
 
-sudo docker save -o /home/subash/docker/redis_6.0-bookworm.tar docker.io/redis:6.0-bookworm
-sudo ls -al /home/subash/docker
-```
-<p align="center">
-<img src="https://github.com/LF-DevOps-Training/feb-23-docker-mahesh-regmi-subash729/blob/main/materials/Q2-T4-2-tar-from-registry-images-to-local-folder.jpg">
-</p>
-
-
-# Question 3
-## 1. Run the image that you downloaded previously.
+### Step -6 Running the Project
 
 ```bash
-sudo docker images
-sudo docker run -it --name redis-subash -d redis:6.0-bookworm
-sudo docker ps
+yarn
+yarn dev
 ```
-
+starting the yarn to test project
 <p align="center">
-<img src="https://github.com/LF-DevOps-Training/feb-23-docker-mahesh-regmi-subash729/blob/main/materials/Q3-T1-1-running-images.jpg">
+<img src="https://github.com/LF-DevOps-Training/feb-19-reactjs-prayatna-subash729/blob/main/materials/Q1-T1-4-running-project.jpg">
 </p>
 
-## 2. Check the CPU and memory usage of the container.
+output
+<p align="center">
+<img src="https://github.com/LF-DevOps-Training/feb-19-reactjs-prayatna-subash729/blob/main/materials/Q1-T5-testing-insert-details-feature.jpg">
+</p>
+
+# Q2. Create a table route to show the list of internmembers
+
+InternMembersTable.jsx
+Adding package for routing
 ```bash
- sudo docker stats redis-subash
+yarn add react-router-dom
 ```
-<p align="center">
-<img src="https://github.com/LF-DevOps-Training/feb-23-docker-mahesh-regmi-subash729/blob/main/materials/Q3-T2-identifying-resource-usage-container.jpg">
-</p>
-
-## 3. Limit the CPU and memory usage to the amount that you see ideal for this container.
-
+Adding comonents  to shows inserted data
 ```bash
-#creating new container after identifying actual resources required to container
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
 
-# We have create new image from above container to get all our changes
-sudo docker run -dit --cpus 0.25 --memory="50m" --name redish-subash2 redis:6.0-bookworm
+const InternMembersTable = () => {
+  const [internMembers, setInternMembers] = useState([]);
 
-#updating allocated resources 
-sudo docker update --cpus=0.5 --memory=100m redish-subash2
-```
-Identifying required resources
-<p align="center">
-<img src="https://github.com/LF-DevOps-Training/feb-23-docker-mahesh-regmi-subash729/blob/main/materials/Q3-T3-1-before-defining-limit.jpg">
-</p>
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get('http://localhost:3001/internMembers');
+        setInternMembers(response.data);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
 
-creating new container with manally predefining the resources
-<p align="center">
-<img src="https://github.com/LF-DevOps-Training/feb-23-docker-mahesh-regmi-subash729/blob/main/materials/Q3-T3-2-defining-limit.jpg">
-</p>
+    fetchData();
+  }, []);
 
-Changing the limit of allocated resources
-<p align="center">
-<img src="https://github.com/LF-DevOps-Training/feb-23-docker-mahesh-regmi-subash729/blob/main/materials/Q3-T3-3-chnaging-limit.jpg">
-</p>
+  return (
+    <div>
+      <h2>Intern Members List</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Address</th>
+            <th>Date of Birth</th>
+            <th>Selection Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          {internMembers.map((member) => (
+            <tr key={member.id}>
+              <td>{member.name}</td>
+              <td>{member.address}</td>
+              <td>{new Date(member.dateOfBirth).toLocaleDateString()}</td>
+              <td>{member.selectionStatus ? 'Selected' : 'Not Selected'}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+};
 
-
-# step 4 : We can also use Docker compose
-
-```
-Example docker-compose configuration:
-
-version: '3'
-
-services:
-  my-service:
-    image: my-image
-    cpu_period: 50000
-    cpu_quota: 25000
-    memory: 512m
-```
-
-# Question 4
-
-## 1. Write a dockerfile to build the image for the 3-tier application that you developed in earlier assignments.
-Pre requirements
-```
-sudo docker network create bridge-subas --driver bridge
-sudo docker inspect bridge-subas
-
-nano Dockerfiledb
-nano Dockerfilebackend
-nano Dockerfilefrontend
-```
-
-scripts of Dockerfile are as follows
-### Dockerfiledb
-```bash
-FROM postgres:latest
-
-# Define arguments for username and password
-ARG POSTGRES_USER=myuser
-ARG POSTGRES_PASSWORD=mypassword
-ARG POSTGRES_DB=mydatabase
-
-# Set environment variables
-ENV POSTGRES_USER=$POSTGRES_USER
-ENV POSTGRES_PASSWORD=$POSTGRES_PASSWORD
-ENV POSTGRES_DB=$POSTGRES_DB
-
-# Expose the PostgreSQL port
-EXPOSE 5432
-```
-you can download script [Dockerfiledb](https://github.com/LF-DevOps-Training/feb-23-docker-mahesh-regmi-subash729/blob/main/code/Dockerfiledb)
-
-### Dockerfilebackend
-```bash
-# Downloading even stable version
-
-FROM node:20-alpine
-
-# Set the working directory
-WORKDIR /backend
-
-# Copy package.json and package-lock.json
-COPY package*.json /backend/
-COPY yarn.lock /backend/
-
-
-# Install dependencies
-RUN yarn install
-
-# Copy the rest of the application
-COPY . .
-
-# Expose the backend port
-EXPOSE 3000
-
-# Command to run the backend
-CMD [ "yarn", "start" ]
-```
-
-Download Dockerfile for  backend [Dockerfilebackend](https://github.com/LF-DevOps-Training/feb-23-docker-mahesh-regmi-subash729/blob/main/code/Dockerfilebackend)
-
-### Dockerfilefrontend
-```bash
-# Downloading even stable version
-
-FROM node:20-alpine
-
-# Set the working directory
-WORKDIR /frontend
-
-# Copy package.json and package-lock.json
-COPY package*.json /frontend/
-COPY yarn.lock /frontend/
-
-
-# Install dependencies
-RUN yarn install
-
-# Copy the rest of the application
-COPY . .
-
-# Expose the backend port
-EXPOSE 5173
-
-# Command to run the backend
-CMD [ "yarn", "dev" ]
+export default InternMembersTable;
 
 ```
-Download Dockerfile for  frontend  [Dockerfilefrontend](https://github.com/LF-DevOps-Training/feb-23-docker-mahesh-regmi-subash729/blob/main/code/Dockerfilefrontend)
+#update done on sunday
+## still researching and testing
 
-### Step -2 Building images and creating container
-```
-# database
-sudo docker build -t tododb-image -f Dockerfiledb .
-sudo docker run  -itd --name tododb-container -e POSTGRES_USER=subash  -e POSTGRES_PASSWORD=subash@123 -e POSTGRES_DB=tododb --network=bridge-subas -p 5432:5432 tododb-image
-```
-database image build
-<p align="center">
-<img src="https://github.com/LF-DevOps-Training/feb-23-docker-mahesh-regmi-subash729/blob/main/materials/Q4-T1-11-db-imagebuild.jpg">
-</p>
-
-container creation
-<p align="center">
-<img src="https://github.com/LF-DevOps-Training/feb-23-docker-mahesh-regmi-subash729/blob/main/materials/Q4-T1-12-db-container-creation.jpg">
-</p>
-
-
-```
-#backend
-sudo docker build -t todobackend-image -f Dockerfilebackend .
-sudo docker run -itd --name todoback-container --network=bridge-subas -p 3000:3000 todobackend-image
-
-```
-
-Backend image build
-<p align="center">
-<img src="https://github.com/LF-DevOps-Training/feb-23-docker-mahesh-regmi-subash729/blob/main/materials/Q4-T2-21-building-image.jpg">
-</p>
-
-container creation
-<p align="center">
-<img src="https://github.com/LF-DevOps-Training/feb-23-docker-mahesh-regmi-subash729/blob/main/materials/Q4-T2-22-creating-container.jpg">
-</p>
-
-```
-#frontend
-sudo docker build -t todofrontend -f Dockerfilefrontend .
-
-#for specific IP 
-sudo docker run -itd --name todofront-container --ip 172.17.0.4 --network=bridge-subas -p 5173:5173 todofrontend
-```
-Frontend image build
-<p align="center">
-<img src="https://github.com/LF-DevOps-Training/feb-23-docker-mahesh-regmi-subash729/blob/main/materials/Q4-T2-31-image-building-Front-end.jpg">
-</p>
-
-container creation
-<p align="center">
-<img src="https://github.com/LF-DevOps-Training/feb-23-docker-mahesh-regmi-subash729/blob/main/materials/Q4-T2-32-container-building-Front-end.jpg">
-</p>
-
-## 2. Your application should be accessible from the host system.
-Testing Database from host
-<p align="center">
-<img src="https://github.com/LF-DevOps-Training/feb-23-docker-mahesh-regmi-subash729/blob/main/materials/Q4-T1-12-db-connect--table-create.jpg">
-</p>
-
-Testing Backed from host
-<p align="center">
-<img src="https://github.com/LF-DevOps-Training/feb-23-docker-mahesh-regmi-subash729/blob/main/materials/Q4-T2-23-backend-response-testing.jpg">
-</p>
-
-Testing Frontend from host
-<p align="center">
-<img src="https://github.com/LF-DevOps-Training/feb-23-docker-mahesh-regmi-subash729/blob/main/materials/Q4-T2-33-Front-end-testing.jpg">
-</p>
-
-manually defining host ip
-After Solution
-<p align="center">
-<img src="https://github.com/LF-DevOps-Training/feb-23-docker-mahesh-regmi-subash729/blob/main/materials/Q4-T1-33-front-end-solution.jpg">
-</p>
-
-site is available
-<p align="center">
-<img src="https://github.com/LF-DevOps-Training/feb-23-docker-mahesh-regmi-subash729/blob/main/materials/Q4-T2-33-frontend-hosting.jpg">
-</p>
-
-## 3. Write a bash script to spawn all these containers and make another script to kill those container.
-
-Scrip to spwan
-```bash
-#!/bin/bash
-echo "List of available images"
-echo "======================"
-sudo docker images
-echo " "
-echo " "
-
-echo "Before container creation"
-echo "======================"
-sudo docker ps -a
-echo " "
-echo " "
-
-
- sudo docker network create bridge-subas --driver bridge
-
-# Start container database
-echo "==creating database container===="
-
-sudo docker run  -itd --name tododb-container -e POSTGRES_USER=subash  -e POSTGRES_PASSWORD=subash@123 -e POSTGRES_DB=tododb --network=bridge-subas -p 5432:5432 tododb-image
-
-# Start container Backend
-echo "==creating backend container===="
-sudo docker run -itd --name todoback-container --network=bridge-subas -p 3000:3000 todobackend-image
-
-# Start container front
-echo "==creating frontend container===="
-sudo docker run -itd --name todofront-container --network=bridge-subas -p 5173:5173 todofrontend
-
-echo " "
-echo " "
-echo "Containers spawned successfully! and list is"
-echo "======================"
-sudo docker ps -a
-```
-<p align="center">
-<img src="https://github.com/LF-DevOps-Training/feb-23-docker-mahesh-regmi-subash729/blob/main/materials/Q4-T3-1-spawn-container.jpg">
-</p>
-
-script to kill
-```bash
-#!/bin/bash
-echo "List of container images"
-echo "======================"
-sudo docker  ps -a
-echo " "
-echo " "
-
-# Start container database
-echo "==Removing database container===="
-sudo docker stop tododb-container
-sudo docker rm tododb-container
-
-# Start container Backend
-echo "==Removing backend container===="
-sudo docker stop todoback-container
-sudo docker rm todoback-container
-
-
-# Start container front
-echo "==Removing frontend container===="
-sudo docker stop todofront-container
-sudo docker rm todofront-container
-
-echo " "
-echo " "
-echo "Containers killed successfully!and list is"
-echo "======================"
-sudo docker ps -a
-
-```
-<p align="center">
-<img src="https://github.com/LF-DevOps-Training/feb-23-docker-mahesh-regmi-subash729/blob/main/materials/Q4-T3-2-kill-container.jpg">
-</p>
-
-## 4. Bonus: Make the data persist by using docker volumes in those containers.
-
-#DOing research on how to setup for 3 tier
-
-# Question 5.
-1. Convert the **answer** from Q4 into docker-compose equivalent implementation.
-2. Running `docker-compose up` should bring all the services up.
-3. Bonus: Add healthcheck in your API.
+Added component for route to show table entry but while doing changes on App.jsx and main.jsx it doesn't reflect anythin
