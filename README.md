@@ -318,8 +318,8 @@ services:
 ## 1. Write a dockerfile to build the image for the 3-tier application that you developed in earlier assignments.
 Pre requirements
 ```
-sudo docker network create bridge-sub --driver bridge
-sudo docker inspect bridge-sub
+sudo docker network create bridge-subas --driver bridge
+sudo docker inspect bridge-subas
 
 nano Dockerfiledb
 nano Dockerfilebackend
@@ -408,7 +408,7 @@ Download Dockerfile for  frontend  [Dockerfilefrontend](https://github.com/LF-De
 ```
 # database
 sudo docker build -t tododb-image -f Dockerfiledb .
-sudo docker run  -itd --name tododb-container -e POSTGRES_USER=subash  -e POSTGRES_PASSWORD=subash@123 -e POSTGRES_DB=tododb -p 5432:5432 tododb-image
+sudo docker run  -itd --name tododb-container -e POSTGRES_USER=subash  -e POSTGRES_PASSWORD=subash@123 -e POSTGRES_DB=tododb --network=bridge-subas -p 5432:5432 tododb-image
 ```
 database image build
 <p align="center">
@@ -424,7 +424,7 @@ container creation
 ```
 #backend
 sudo docker build -t todobackend-image -f Dockerfilebackend .
-sudo docker run -itd --name todoback-container -p 3000:3000 todobackend-image
+sudo docker run -itd --name todoback-container --network=bridge-subas -p 3000:3000 todobackend-image
 
 ```
 
@@ -441,7 +441,9 @@ container creation
 ```
 #frontend
 sudo docker build -t todofrontend -f Dockerfilefrontend .
-sudo docker run -itd --name todofront-container -p 5437:5437 todofrontend
+
+#for specific IP 
+sudo docker run -itd --name todofront-container --ip 172.17.0.4 --network=bridge-subas -p 5173:5173 todofrontend
 ```
 Frontend image build
 <p align="center">
@@ -468,9 +470,96 @@ Testing Frontend from host
 <p align="center">
 <img src="https://github.com/LF-DevOps-Training/feb-23-docker-mahesh-regmi-subash729/blob/main/materials/Q4-T2-33-Front-end-testing.jpg">
 </p>
-It doesn't had provided solution till now, I am still reaserching about it
+
+manually defining host ip
+After Solution
+<p align="center">
+<img src="https://github.com/LF-DevOps-Training/feb-23-docker-mahesh-regmi-subash729/blob/main/materials/Q4-T1-33-front-end-solution.jpg">
+</p>
+
+site is available
+<p align="center">
+<img src="https://github.com/LF-DevOps-Training/feb-23-docker-mahesh-regmi-subash729/blob/main/materials/Q4-T2-33-frontend-hosting.jpg">
+</p>
 
 ## 3. Write a bash script to spawn all these containers and make another script to kill those container.
+
+Scrip to spwan
+```bash
+#!/bin/bash
+echo "List of available images"
+echo "======================"
+sudo docker images
+echo " "
+echo " "
+
+echo "Before container creation"
+echo "======================"
+sudo docker ps -a
+echo " "
+echo " "
+
+
+ sudo docker network create bridge-subas --driver bridge
+
+# Start container database
+echo "==creating database container===="
+
+sudo docker run  -itd --name tododb-container -e POSTGRES_USER=subash  -e POSTGRES_PASSWORD=subash@123 -e POSTGRES_DB=tododb --network=bridge-subas -p 5432:5432 tododb-image
+
+# Start container Backend
+echo "==creating backend container===="
+sudo docker run -itd --name todoback-container --network=bridge-subas -p 3000:3000 todobackend-image
+
+# Start container front
+echo "==creating frontend container===="
+sudo docker run -itd --name todofront-container --network=bridge-subas -p 5173:5173 todofrontend
+
+echo " "
+echo " "
+echo "Containers spawned successfully! and list is"
+echo "======================"
+sudo docker ps -a
+```
+<p align="center">
+<img src="https://github.com/LF-DevOps-Training/feb-23-docker-mahesh-regmi-subash729/blob/main/materials/Q4-T3-1-spawn-container.jpg">
+</p>
+
+script to kill
+```bash
+#!/bin/bash
+echo "List of container images"
+echo "======================"
+sudo docker  ps -a
+echo " "
+echo " "
+
+# Start container database
+echo "==Removing database container===="
+sudo docker stop tododb-container
+sudo docker rm tododb-container
+
+# Start container Backend
+echo "==Removing backend container===="
+sudo docker stop todoback-container
+sudo docker rm todoback-container
+
+
+# Start container front
+echo "==Removing frontend container===="
+sudo docker stop todofront-container
+sudo docker rm todofront-container
+
+echo " "
+echo " "
+echo "Containers killed successfully!and list is"
+echo "======================"
+sudo docker ps -a
+
+```
+<p align="center">
+<img src="https://github.com/LF-DevOps-Training/feb-23-docker-mahesh-regmi-subash729/blob/main/materials/Q4-T3-2-kill-container.jpg">
+</p>
 
 ## 4. Bonus: Make the data persist by using docker volumes in those containers.
 
