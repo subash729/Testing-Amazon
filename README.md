@@ -1,232 +1,342 @@
-## Description
-Create a CRUD application in React interacting with a json-server based on the requirements below
+# A. *Configs and Secrets*
 
-#### Data should have fields for intern members 
-1. Name
-2. Address
-3. Date of birth
-4. Selection Status(boolean)
+## Question 1. Install the latest version of docker and compose.
 
-### 1. Create a form route to entry data for the internmembers
-# Answer
-### Step -1 : Creating project
+### Step -1 : Adding repository with security and updating the package repository
+
+Reading new updated package and and Docker  GPG key to verify  authenticity and integrity of the software package. We also add repository of docker and update so, we get the updated package while installing new package.
+
+```bash
+sudo apt update
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
+
+echo \
+  "deb [signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu \
+  $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+
+
+sudo apt-get update
 ```
-yarn create vite my-crud-app --template react
-cd my-crud-app
-yarn add react-router-dom axios
-yarn add react-datepicker
-yarn add json-server
+Updating repository and reading new package list
+<p align="center">
+<img src="https://github.com/LF-DevOps-Training/feb-23-docker-services-and-swarm-pranav-pudasaini-subash729/blob/main/materials/QA-T1-11-adding%20and%20updating-repo.jpg">
+</p>
+
+
+### step -2 
+```bash
+sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+
+sudo docker --version
+sudo docker compose version
+```
+Updated Version
+<p align="center">
+<img src="https://github.com/LF-DevOps-Training/feb-23-docker-services-and-swarm-pranav-pudasaini-subash729/blob/main/materials/QA-T1-12-installing%20and%20checking%20-version.jpg">
+</p>
+
+## Question 2. Explore Compose docs to understand the supported types of configs and secrets.
+
+Architecture
+- **Version and name top-level elements**
+  - The "version" property in the Compose Specification is primarily for backward compatibility and is informative rather than prescriptive. Compose does not use the version to enforce schema validation but instead favors the most recent schema 
+  
+- Services top-level elements  
+- Networks top-level elements
+- Volumes top-level elements
+- Configs top-level elements
+- Secrets top-level elements
+
+### 1. **Configs top-level elements**
+   
+- **1.1 Environment Variables:**
+   We can set environment variables for services in the ```docker-compose.yml``` file. These variables are used to configure various aspects of the containerized applications. For e.g.
+   
+   ```yml
+   services:
+    web:
+        image: nginx
+        environment:
+            - MY_VARIABLE=anyvalue
+   ```
+- 1.2  **Configuration Files:**
+We can also use configuration files in services to provide additional configuration details. For e.g.
+```yml
+services:
+  web:
+    image: nginx
+    configs:
+        http_config:
+            file: /etc/nginx/conf.d/default.conf
+```
+Example -2
+```<project_name>_app_config``` is created when the application is deployed, by registering the inlined content as the configuration data. This means Compose infers variables when creating the config, which allows you to adjust content according to service configuration:
+
+```yml
+configs:
+  app_config:
+    content: |
+      debug=${DEBUG}
+      spring.application.admin.enabled=${DEBUG}
+      spring.application.name=${COMPOSE_PROJECT_NAME} 
+```
+
+[Official Reference link](https://docs.docker.com/compose/compose-file/)
+
+### 2. Secrets top-level elements
+Docker Compose supports managing secrets, which are sensitive pieces of data such as API keys, passwords, etc. Secrets are stored securely and made available to the containers. They are usually used in conjunction with Docker Swarm.
+
+For example  1
+```yml
+services:
+  db:
+    image: postgres
+    secrets:
+      - db_password
+secrets:
+  db_password:
+    file: ./secrets/db_password.txt
+```
+For example -2 for token
+
+```yml
+
+services:
+  db:
+    image: postgres
+    secrets:
+      - db_password
+
+secrets:
+  db_password:
+    file: ./secrets/db_password.txt
+  token:
+    external: true
+```
+
+
+## Question 3. Use secrets and configs as applicable in your dockerized 3-tier application.
+
+## Question 4. Make sure that you are running docker commands without sudo and the user inside the container is also not root.
+
+### Step -1  Adding user to docker group 
+```
+#For adding current login user 
+sudo usermod -aG docker $USER
+
+#For adding other user 
+sudo usermod -aG docker testuser
+
+logout
+ssh username@<host-ip>
+docker ps
+```
+<p align="center">
+<img src="https://github.com/LF-DevOps-Training/feb-23-docker-services-and-swarm-pranav-pudasaini-subash729/blob/main/materials/QA-T4-allowedocker-non-root.jpg">
+</p>
+
+## Step -2 Creating image to run container with non root user
+We download a Linux image, then create a user without adding it to the root group during image building. We log in with the specified user and shell that are defined for the user.
+
+```
+nano Dockerfile
+docker build -t non-root-image .
+docker run -it --name non-root-container --user subash non-root-image /bin/sh
+
+#Run any command
+```
+
+Used Dockerfile
+```Dockerfile
+# Use a base image with your desired OS
+FROM ubuntu:latest
+
+# Create a non-root user and switch to it
+RUN useradd -m -s /bin/sh subash
+USER subash
+
+# Set the working directory
+WORKDIR /user1
+
+CMD echo you are login as non root user
+```
+<p align="center">
+<img src="https://github.com/LF-DevOps-Training/feb-23-docker-services-and-swarm-pranav-pudasaini-subash729/blob/main/materials/QA-T4-2-container-with-non-root.jpg">
+</p>
+
+
+# B. *Debugging*
+
+##  Question 1. 
+## You have been tasked to debug this Docker image docker.io/ppbro/ggmeter:v1. For some strange reason, port 8080 is inaccessible from the host. You need to fix this image, use `docker commit` to create a new image, and publish it to DockerHub.
+
+### Step - 1 : Building container and checking connectivity 
+
+In this stage, we create a container and verfying connectivity  and port binding of host with container. We also verify some logs 
+```bash
+docker run -d -p 8080:8080 --name ggmeter-debug docker.io/ppbro/ggmeter:v1
+docker ps -a
+curl 192.168.140.138:8080
+docker logs ggmeter-debug
+
+netstat -tulpn | grep 8080
+docker exec -it ggmeter-debug netstat -tulpn | grep 8080
+docker container inspect ggmeter-debug
 ```
 
 <p align="center">
-<img src="https://github.com/LF-DevOps-Training/feb-19-reactjs-prayatna-subash729/blob/main/materials/Q1-T1-1-project-creating.jpg">
+<img src="">
 </p>
+Everything is seems to be fine in host while container execute a serve.sh script and also we find port is exposed but bind with container loopback ip.
 
-### step -2 : Adding component in react and interconnecting them.
+<
 
-### Database creation
-creating db.json in root directory
+### Step -2 Finding issue on container
+We will check serve.sh config because conntainer shows it execute script serve.sh
 ```bash
-{
-    "internMembers": []
-  }
+docker exec -it ggmeter-debug /bin/sh
+ls -al
+vi serve.sh
+exit
+docker stop ggmeter-debug
+docker start ggmeter-debug
+
 ```
-making live to listen 
+
 ```bash
-json-server --watch db.json --port 3001
+#!/bin/sh
 
+python3 -m http.server -b 0.0.0.0 8080
 ```
-we can find our database at
-http://localhost:3001/internMembers
-
 <p align="center">
-<img src="https://github.com/LF-DevOps-Training/feb-19-reactjs-prayatna-subash729/blob/main/materials/Q1-T1-2-databse-up.jpg">
+<img src="">
 </p>
 
-### Step - 3 : making  some changes so that it can support jsx
-3.1  creating **tsconfig.json** in root level
-```bash
-{
-    "compilerOptions": {
-      "jsx": "react-jsx"
-    }
-  }
-```
 
-3.2 Adding ``` jsx: 'react-jsx' ``` in vite.config.js
-final config will be
-```bash
-import { defineConfig } from 'vite';
-import react from '@vitejs/plugin-react';
 
-// https://vitejs.dev/config/
-export default defineConfig({
-  plugins: [react()],
-  jsx: 'react-jsx', 
-})
+### Step -3 Restarting Container and testing connectivity
+```bash
+curl localhost:8080
+curl 192.168.140.138:8080
 ```
-Adding config files
 <p align="center">
-<img src="https://github.com/LF-DevOps-Training/feb-19-reactjs-prayatna-subash729/blob/main/materials/Q1-T1-3-adding-config-files.jpg">
+<img src="">
 </p>
 
-### Step -4 Creating ```components``` directory under ```src``` to add components for inserting data
+### Step -4 Creating new image and puhing it to dockerhub
 ```bash
-import React, { useState } from 'react';
-import DatePicker from 'react-datepicker';
-import 'react-datepicker/dist/react-datepicker.css';
-import axios from 'axios';
-
-const InternMembersForm = () => {
-  const [formData, setFormData] = useState({
-    name: '',
-    address: '',
-    dateOfBirth: new Date(), // Set a default date
-    selectionStatus: false,
-  });
-
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
-
-  const handleDateChange = (date) => {
-    setFormData({ ...formData, dateOfBirth: date });
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      await axios.post('http://localhost:3001/internMembers', formData);
-      console.log('Data submitted successfully');
-      // You can also redirect or show a success message here
-    } catch (error) {
-      console.error('Error submitting data:', error);
-    }
-  };
-
-  return (
-    <form onSubmit={handleSubmit}>
-      <label>Name:</label>
-      <input type="text" name="name" value={formData.name} onChange={handleChange} />
-
-      <label>Address:</label>
-      <input type="text" name="address" value={formData.address} onChange={handleChange} />
-
-      <label>Date of Birth:</label>
-      <DatePicker selected={formData.dateOfBirth} onChange={handleDateChange} />
-
-      <label>Selection Status:</label>
-      <input
-        type="checkbox"
-        name="selectionStatus"
-        checked={formData.selectionStatus}
-        onChange={handleChange}
-      />
-
-      <button type="submit">Submit</button>
-    </form>
-  );
-};
-
-export default InternMembersForm;
-
+docker stop ggmeter-debug
+docker commit ggmeter-debug subash-ggmeter
+docker login
+docker tag subash-ggmeter subash729/subash-ggmeter
+docker push subash729/subash-ggmeter
 ```
-### step -5 : Updating App.jsx by routing it to InternMembersForm component 
-
-```bash
-import React from 'react';
-import InternMembersForm from './components/InternMembersForm';
-
-const App = () => {
-  return (
-    <div>
-      <h1>Intern Members CRUD App</h1>
-      <InternMembersForm />
-    </div>
-  );
-};
-
-export default App;
-```
-
-
-
-
-### Step -6 Running the Project
-
-```bash
-yarn
-yarn dev
-```
-starting the yarn to test project
 <p align="center">
-<img src="https://github.com/LF-DevOps-Training/feb-19-reactjs-prayatna-subash729/blob/main/materials/Q1-T1-4-running-project.jpg">
+<img src="">
 </p>
 
-output
+
+# C. *Swarm*
+
+## Question 1. 
+## Go to https://labs.play-with-docker.com, create a swarm with 1 master and 2 worker nodes.
+Initializing swarm
+```bash
+#TO initialize as master
+docker swarm init --advertise-addr eth0
+
+# To join as worker
+docker swarm join --token SWMTKN-1-1fdxh2b3r78cbhizpuvo8uoytfkdenio87kau8ikawqppxid46-b57ixhzghph95a51drk81ofne 192.168.0.8:2377
+```
+Master initialize
 <p align="center">
-<img src="https://github.com/LF-DevOps-Training/feb-19-reactjs-prayatna-subash729/blob/main/materials/Q1-T5-testing-insert-details-feature.jpg">
+<img src="">
 </p>
 
-# Q2. Create a table route to show the list of internmembers
+Slave initialize
+<p align="center">
+<img src="">
+</p>
 
-InternMembersTable.jsx
-Adding package for routing
+
+## Question 2. 
+## Write Docker Stack YAML to run 5 replicas of the busybox container. Provide screenshots showing the containers running on both worker nodes and the master node.
 ```bash
-yarn add react-router-dom
+docker stack deploy -c docker-compose.yml subashstack
+docker ps -a
 ```
-Adding comonents  to shows inserted data
+
+yaml comfig of docker-compose is
+```yml
+version: "3"
+
+services:
+  busybox:
+    image: busybox
+    deploy:
+      replicas: 5
+```
+Master nodes container
+<p align="center">
+<img src="">
+</p>
+
+slave node container
+<p align="center">
+<img src="">
+</p>
+
+2nd slave node container
+<p align="center">
+<img src="">
+</p>
+
+## Question 3. 
+## Why is the master node running containers? Change your swarm configuration so that only the worker nodes run the services.
+
+Logic : composing docker as no any container should be run on node who is working as master.
 ```bash
-import React, { useEffect, useState } from 'react';
-import axios from 'axios';
-
-const InternMembersTable = () => {
-  const [internMembers, setInternMembers] = useState([]);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await axios.get('http://localhost:3001/internMembers');
-        setInternMembers(response.data);
-      } catch (error) {
-        console.error('Error fetching data:', error);
-      }
-    };
-
-    fetchData();
-  }, []);
-
-  return (
-    <div>
-      <h2>Intern Members List</h2>
-      <table>
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>Address</th>
-            <th>Date of Birth</th>
-            <th>Selection Status</th>
-          </tr>
-        </thead>
-        <tbody>
-          {internMembers.map((member) => (
-            <tr key={member.id}>
-              <td>{member.name}</td>
-              <td>{member.address}</td>
-              <td>{new Date(member.dateOfBirth).toLocaleDateString()}</td>
-              <td>{member.selectionStatus ? 'Selected' : 'Not Selected'}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
-  );
-};
-
-export default InternMembersTable;
-
+docker stack deploy -c docker-compose.yml subashstack
+docker ps -a
 ```
-#update done on sunday
-## still researching and testing
+```bash
+version: "3"
+services:
+  busybox:
+    image: busybox
+    deploy:
+      placement: 
+        constraints: 
+          - node.role != manager
+      replicas: 5
+```
 
-Added component for route to show table entry but while doing changes on App.jsx and main.jsx it doesn't reflect anythin
+Master nodes with no any container
+<p align="center">
+<img src="">
+</p>
+
+slave node with  container
+<p align="center">
+<img src="">
+</p>
+
+4. Deploy your 3-tier application as a Docker Stack in a Swarm. The containers should be distributed across 1 master and 2 worker nodes. Hint: You might need to make your compose file compatible with Stack.
+
+Step 1 : Pushing 3-tier images to dockerhub and pulling to dockerplay
+```bash
+#local to docker hub
+docker push subash729/tododb-image
+docker push subash729/todobackend-image
+docker push subash729/todofrontend-image
+
+# dockerhub to docker play
+docker pull subash729/tododb-image
+docker pull subash729/todobackend-image
+docker pull subash729/todofrontend-image
+```
+<p align="center">
+<img src="">
+</p>
+
+5. Scale-up your backend replicas to 20. Did you face any issue with the stack?
