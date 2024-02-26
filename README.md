@@ -185,11 +185,9 @@ docker container inspect ggmeter-debug
 ```
 
 <p align="center">
-<img src="">
+<img src="https://github.com/LF-DevOps-Training/feb-23-docker-services-and-swarm-pranav-pudasaini-subash729/blob/main/materials/QB-1-container-build-host-config-checking.jpg">
 </p>
 Everything is seems to be fine in host while container execute a serve.sh script and also we find port is exposed but bind with container loopback ip.
-
-<
 
 ### Step -2 Finding issue on container
 We will check serve.sh config because conntainer shows it execute script serve.sh
@@ -200,7 +198,6 @@ vi serve.sh
 exit
 docker stop ggmeter-debug
 docker start ggmeter-debug
-
 ```
 
 ```bash
@@ -209,7 +206,7 @@ docker start ggmeter-debug
 python3 -m http.server -b 0.0.0.0 8080
 ```
 <p align="center">
-<img src="">
+<img src="https://github.com/LF-DevOps-Training/feb-23-docker-services-and-swarm-pranav-pudasaini-subash729/blob/main/materials/QB-2-Resolving-container-issue.jpg">
 </p>
 
 
@@ -220,7 +217,7 @@ curl localhost:8080
 curl 192.168.140.138:8080
 ```
 <p align="center">
-<img src="">
+<img src="https://github.com/LF-DevOps-Training/feb-23-docker-services-and-swarm-pranav-pudasaini-subash729/blob/main/materials/QB-3-Testing-services.jpg">
 </p>
 
 ### Step -4 Creating new image and puhing it to dockerhub
@@ -232,7 +229,7 @@ docker tag subash-ggmeter subash729/subash-ggmeter
 docker push subash729/subash-ggmeter
 ```
 <p align="center">
-<img src="">
+<img src="https://github.com/LF-DevOps-Training/feb-23-docker-services-and-swarm-pranav-pudasaini-subash729/blob/main/materials/QB-4-new-image-build-and-push.jpg">
 </p>
 
 
