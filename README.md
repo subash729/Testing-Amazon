@@ -287,7 +287,7 @@ slave node container
 
 2nd slave node container
 <p align="center">
-<img src="">
+<img src="https://github.com/LF-DevOps-Training/feb-23-docker-services-and-swarm-pranav-pudasaini-subash729/blob/main/materials/QB-T2-2-Docker-compose-slave2.jpg">
 </p>
 
 ## Question 3. 
@@ -312,12 +312,12 @@ services:
 
 Master nodes with no any container
 <p align="center">
-<img src="">
+<img src="https://github.com/LF-DevOps-Training/feb-23-docker-services-and-swarm-pranav-pudasaini-subash729/blob/main/materials/QB-T2-3-Docker-compose-master.jpg">
 </p>
 
 slave node with  container
 <p align="center">
-<img src="">
+<img src="https://github.com/LF-DevOps-Training/feb-23-docker-services-and-swarm-pranav-pudasaini-subash729/blob/main/materials/QB-T3-2-Docker-slave.jpg">
 </p>
 
 4. Deploy your 3-tier application as a Docker Stack in a Swarm. The containers should be distributed across 1 master and 2 worker nodes. Hint: You might need to make your compose file compatible with Stack.
