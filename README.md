@@ -334,8 +334,15 @@ docker pull subash729/tododb-image
 docker pull subash729/todobackend-image
 docker pull subash729/todofrontend-image
 ```
+Pushing to github
 <p align="center">
-<img src="">
+<img src="https://github.com/LF-DevOps-Training/feb-23-docker-services-and-swarm-pranav-pudasaini-subash729/blob/main/materials/QB-T4-1-pushing-local-to-dockerhub.jpg">
+</p>
+
+Pulling to DOcker play
+
+<p align="center">
+<img src="https://github.com/LF-DevOps-Training/feb-23-docker-services-and-swarm-pranav-pudasaini-subash729/blob/main/materials/QB-T4-1-pulling-dockerhub-to-docker-play.jpg">
 </p>
 
 5. Scale-up your backend replicas to 20. Did you face any issue with the stack?
