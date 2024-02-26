@@ -247,12 +247,12 @@ docker swarm join --token SWMTKN-1-1fdxh2b3r78cbhizpuvo8uoytfkdenio87kau8ikawqpp
 ```
 Master initialize
 <p align="center">
-<img src="">
+<img src="https://github.com/LF-DevOps-Training/feb-23-docker-services-and-swarm-pranav-pudasaini-subash729/blob/main/materials/QC-T1-1-Swarm-init-master-and-slave-initialize.jpg">
 </p>
 
 Slave initialize
 <p align="center">
-<img src="">
+<img src="https://github.com/LF-DevOps-Training/feb-23-docker-services-and-swarm-pranav-pudasaini-subash729/blob/main/materials/QC-T1-12-Swarm-slave-initialize.jpg">
 </p>
 
 
@@ -275,13 +275,15 @@ services:
 ```
 Master nodes container
 <p align="center">
-<img src="">
+<img src="https://github.com/LF-DevOps-Training/feb-23-docker-services-and-swarm-pranav-pudasaini-subash729/blob/main/materials/QB-T2-1-Docker-compose-master.jpg">
 </p>
+
 
 slave node container
 <p align="center">
-<img src="">
+<img src="https://github.com/LF-DevOps-Training/feb-23-docker-services-and-swarm-pranav-pudasaini-subash729/blob/main/materials/QB-T2-1-Docker-compose-slave.jpg">
 </p>
+
 
 2nd slave node container
 <p align="center">
